@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Pleats" />
+<title>Pleats Calculator</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    background: #fafafa;
+    margin: 20px;
+    color: #222;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1 {
+    font-size: 2.2rem;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 600;
+  }
+  label {
+    display: block;
+    margin-top: 20px;
+    font-size: 1.1rem;
+  }
+  input {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.3rem;
+    margin-top: 8px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    outline-offset: 2px;
+    -webkit-appearance: none;
+  }
+  input:focus {
+    border-color: #4caf50;
+    box-shadow: 0 0 5px #4caf50;
+  }
+  button {
+    margin-top: 30px;
+    width: 100%;
+    background: #4caf50;
+    border: none;
+    padding: 18px;
+    font-size: 1.4rem;
+    color: white;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  button:hover,
+  button:focus {
+    background: #45a049;
+  }
+  .result {
+    margin-top: 30px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    font-size: 1.2rem;
+    line-height: 1.5;
+  }
+  .warning {
+    color: #d32f2f;
+    font-weight: 700;
+  }
+  @media (min-width: 400px) {
+    body {
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h1>Pleats Calculator</h1>
+
+<label for="hipSize">Hip-to-Hip Size (half waist circumference, inches):</label>
+<input type="number" id="hipSize" min="0" step="0.01" placeholder="e.g. 16.5" inputmode="decimal" />
+
+<label for="pleatWidth">Pleat Width (visible, inches):</label>
+<input type="number" id="pleatWidth" min="0" step="0.01" placeholder="e.g. 3.25" inputmode="decimal" />
+
+<label for="materialLength">Material Length Available (inches):</label>
+<input type="number" id="materialLength" min="0" step="0.01" placeholder="e.g. 116.5" inputmode="decimal" />
+
+<button onclick="calculate()">Calculate</button>
+
+<div id="output" class="result" aria-live="polite"></div>
+
+<script>
+  function calculate() {
+    const hipSize = parseFloat(document.getElementById("hipSize").value);
+    const pleatWidth = parseFloat(document.getElementById("pleatWidth").value);
+    const materialLength = parseFloat(document.getElementById("materialLength").value);
+
+    const outputEl = document.getElementById("output");
+
+    if (
+      isNaN(hipSize) ||
+      hipSize <= 0 ||
+      isNaN(pleatWidth) ||
+      pleatWidth <= 0 ||
+      isNaN(materialLength) ||
+      materialLength <= 0
+    ) {
+      outputEl.innerHTML = '<p class="warning">Please enter valid positive numbers for all fields.</p>';
+      return;
+    }
+
+    // Calculate full number of pleats (double because hipSize is half circumference)
+    const numPleats = Math.floor((hipSize / pleatWidth) * 2);
+    const underlap = pleatWidth * 2;
+    const fabricPerPleat = pleatWidth + underlap;
+    const totalMaterialNeeded = numPleats * fabricPerPleat;
+
+    let resultHTML = `
+      <p><strong>Number of Pleats:</strong> ${numPleats}</p>
+      <p><strong>Underlap (Pleat Width × 2):</strong> ${underlap.toFixed(2)} inches</p>
+      <p><strong>Total Material Needed:</strong> ${totalMaterialNeeded.toFixed(2)} inches</p>
+      <p><strong>Material Available:</strong> ${materialLength.toFixed(2)} inches</p>
+    `;
+
+    if (materialLength < totalMaterialNeeded) {
+      resultHTML += `<p class="warning">Warning: You do NOT have enough material for ${numPleats} pleats.</p>`;
+    } else {
+      resultHTML += `<p style="color:green; font-weight:bold;">You have enough material!</p>`;
+    }
+
+    outputEl.innerHTML = resultHTML;
+  }
+</script>
+
+</body>
+</html>
